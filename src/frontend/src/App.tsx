@@ -6,6 +6,7 @@ import {
   createRoute,
   createRouter,
 } from "@tanstack/react-router";
+import { Suspense } from "react";
 import { AdminLayout } from "./admin/AdminLayout";
 import { AdminCaseDetail } from "./admin/pages/AdminCaseDetail";
 import { AdminCases } from "./admin/pages/AdminCases";
@@ -16,6 +17,7 @@ import { AdminLogs } from "./admin/pages/AdminLogs";
 import { AdminMedia } from "./admin/pages/AdminMedia";
 import { AdminSettings } from "./admin/pages/AdminSettings";
 import { AdminStaff } from "./admin/pages/AdminStaff";
+import { AppErrorBoundary } from "./components/AppErrorBoundary";
 import { FloatingButtons } from "./components/FloatingButtons";
 import { Footer } from "./components/Footer";
 import { Navbar } from "./components/Navbar";
@@ -40,6 +42,20 @@ if ("serviceWorker" in navigator) {
   });
 }
 
+// Page loading fallback
+function PageLoader() {
+  return (
+    <div className="min-h-[60vh] flex items-center justify-center">
+      <div className="text-center">
+        <div className="text-4xl mb-3 animate-pulse">🕵️</div>
+        <p className="text-muted-foreground text-sm uppercase tracking-widest">
+          Loading...
+        </p>
+      </div>
+    </div>
+  );
+}
+
 // ─── Route Definitions ───
 
 // Public layout
@@ -48,7 +64,9 @@ function PublicLayout() {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <div className="flex-1">
-        <Outlet />
+        <Suspense fallback={<PageLoader />}>
+          <Outlet />
+        </Suspense>
       </div>
       <Footer />
       <FloatingButtons />
@@ -58,10 +76,10 @@ function PublicLayout() {
 
 const rootRoute = createRootRoute({
   component: () => (
-    <>
+    <AppErrorBoundary>
       <Outlet />
       <Toaster theme="dark" position="top-right" />
-    </>
+    </AppErrorBoundary>
   ),
 });
 
@@ -227,7 +245,21 @@ const routeTree = rootRoute.addChildren([
   clientPortalLayout.addChildren([clientPortalHome, clientCaseDetail]),
 ]);
 
-const router = createRouter({ routeTree });
+const router = createRouter({
+  routeTree,
+  defaultErrorComponent: ({ error }) => (
+    <div className="min-h-[60vh] flex items-center justify-center px-4">
+      <div className="text-center max-w-md">
+        <div className="text-4xl mb-3">⚠️</div>
+        <h2 className="text-xl font-bold text-foreground mb-2 uppercase">
+          Page Error
+        </h2>
+        <p className="text-muted-foreground text-sm">{String(error)}</p>
+      </div>
+    </div>
+  ),
+  defaultPendingComponent: () => <PageLoader />,
+});
 
 declare module "@tanstack/react-router" {
   interface Register {
