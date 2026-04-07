@@ -1,0 +1,26 @@
+{
+  "name": "Master Detective Agency",
+  "short_name": "MasterDet",
+  "description": "Professional Detective Agency Platform",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#8B1E23",
+  "background_color": "#0B0D10",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/assets/generated/logo-shield-transparent.dim_200x200.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/assets/generated/logo-shield-transparent.dim_200x200.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["business", "security"],
+  "lang": "en"
+}
